@@ -17,5 +17,5 @@ SJF:
 	Rodar processo [6] de [52] até [56]
 
 RR:
-	1
+	TO DO
 

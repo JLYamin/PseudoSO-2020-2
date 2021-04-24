@@ -9,7 +9,7 @@ class Process:
         self.pre_process(file_data)
         self.output.append(self.fifo())
         self.output.append(self.sjf())
-        self.output.append(["1"])
+        self.output.append(self.rr())
 
         self.save_output()
     
@@ -76,3 +76,6 @@ class Process:
             aux_sjf = sorted(aux_sjf, key = lambda x: x['duration'])
 
         return output_sjf
+
+    def rr(self):
+        return ["TO DO"]
