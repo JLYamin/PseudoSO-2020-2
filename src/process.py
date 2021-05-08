@@ -97,14 +97,20 @@ class Process:
 
         # ordena pela chegada
         input_rr = sorted(self.input, key=lambda x: x['arrival'])
-        tempo_total = 0
+        # pega o tempo de chegada do primeiro elemento, para o caso de não iniciar em 0
+        tempo_total = input_rr[0]['arrival']
         arrived = list(filter(lambda x: x['arrival'] <= tempo_total, input_rr))
 
         while (len(input_rr) != 0): 
             for elem in input_rr:
             # Adiciona os processos que chegam
                 if (elem['arrival'] <= tempo_total) and (len(list(filter(lambda x: x['id'] == elem['id'], arrived))) == 0) :
-                    arrived.insert(len(arrived) - 1, elem)         
+                    arrived.insert(len(arrived) - 1, elem) 
+           
+            if len(arrived) == 0 and len(input_rr) != 0:
+                arrived.append(input_rr[0])
+                tempo_total = input_rr[0]['arrival']
+
             print(arrived)
            
             # verifica se a duração > quantum
