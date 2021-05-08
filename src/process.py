@@ -98,28 +98,29 @@ class Process:
         # ordena pela chegada
         input_rr = sorted(self.input, key=lambda x: x['arrival'])
         tempo_total = 0
+        arrived = list(filter(lambda x: x['arrival'] <= tempo_total, input_rr))
 
-        while (len(input_rr) != 0):
-
-            print(input_rr)
-
-            if (input_rr[0]['arrival'] <= tempo_total):
-                # verifica se a duração > quantum
-                if (input_rr[0]['duration'] > quantum):
-                    # duração - quantum
-                    input_rr[0]['duration'] -= quantum
-                    output_rr.append("Rodar processo [" + str(input_rr[0]['id']) + "] de [" + str(
-                        tempo_total) + "] até [" + str(tempo_total + quantum) + "]")
-                    tempo_total += quantum
-                    input_rr.append(input_rr.pop(0))                      #
-                else:
-                    output_rr.append("Rodar processo [" + str(input_rr[0]['id']) + "] de [" + str(
-                        tempo_total) + "] até [" + str(tempo_total + input_rr[0]['duration']) + "]")
-                    tempo_total += input_rr[0]['duration']
-                    # remove elemento do array
-                    input_rr = list(
-                        filter(lambda x: x['id'] != input_rr[0]['id'], input_rr))
+        while (len(input_rr) != 0): 
+            for elem in input_rr:
+            # Adiciona os processos que chegam
+                if (elem['arrival'] <= tempo_total) and (len(list(filter(lambda x: x['id'] == elem['id'], arrived))) == 0) :
+                    arrived.insert(len(arrived) - 1, elem)         
+            print(arrived)
+           
+            # verifica se a duração > quantum
+            if (arrived[0]['duration'] > quantum):
+                # duração - quantum
+                arrived[0]['duration'] -= quantum
+                output_rr.append("Rodar processo [" + str(arrived[0]['id']) + "] de [" + str(
+                    tempo_total) + "] até [" + str(tempo_total + quantum) + "]")
+                tempo_total += quantum
+                arrived.append(arrived.pop(0))                      #
             else:
-                input_rr.append(input_rr.pop(0))
+                output_rr.append("Rodar processo [" + str(arrived[0]['id']) + "] de [" + str(
+                    tempo_total) + "] até [" + str(tempo_total + arrived[0]['duration']) + "]")
+                tempo_total += arrived[0]['duration']
+                # remove elemento do array
+                removed_element_id = arrived.pop(0)['id']
+                input_rr = list(filter(lambda x: x['id'] != removed_element_id, input_rr))
 
         return output_rr
