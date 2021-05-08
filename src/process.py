@@ -7,11 +7,14 @@ class Process:
 
     def __init__(self, file_data):
         self.pre_process(file_data)
+       
         self.output.append(self.fifo())
         self.output.append(self.sjf())
         self.output.append(self.rr())
 
         self.save_output()
+        self.time_analysis()
+
 
     def pre_process(self, file_data):
         self.input = [{"id": idx, "arrival": int(data.split()[0]), "duration":int(
@@ -25,7 +28,8 @@ class Process:
         for idx in range(len(labels)):
             file.write(labels[idx] + ":\n")
             for line in self.output[idx]:
-                file.write("\t" + line + "\n")
+                file.write("\tRodar processo [" + str(line[0]) + "] de [" + str(
+                    line[1]) + "] até [" + str(line[2]) + "]\n")
             file.write("\n")
         file.close()
 
@@ -33,7 +37,7 @@ class Process:
         tempo_total = 0
 
         input_fifo = sorted(self.input, key=lambda x: x['arrival'])
-        output_fifo = []
+        output_fifo = [] # lista de triplas: [(a,b,c), (a,b,x)]
 
         for data in input_fifo:
 
@@ -52,8 +56,7 @@ class Process:
                 # tempo total é atualizado com o tempo final
                 tempo_total = end
 
-            output_fifo.append(
-                "Rodar processo [" + str(idx) + "] de [" + str(start) + "] até [" + str(end) + "]")
+            output_fifo.append((idx, start, end))
 
         return output_fifo
 
@@ -67,8 +70,7 @@ class Process:
         aux_sjf = input_sjf
 
         while (len(input_sjf) != 0):
-            output_sjf.append("Rodar processo [" + str(aux_sjf[0]['id']) + "] de [" + str(tempo_total) + "] até [" + str(aux_sjf[0]['duration'] +
-                                                                                                                         tempo_total) + "]")                                                            # salvando a primeira linha após a ordenação
+            output_sjf.append((aux_sjf[0]['id'], tempo_total, (aux_sjf[0]['duration'] + tempo_total))) # salvando a primeira linha após a ordenação
 
             # atribui a duration da linha atual ao tempo_total
             tempo_total = tempo_total + aux_sjf[0]['duration']
@@ -110,23 +112,55 @@ class Process:
             if len(arrived) == 0 and len(input_rr) != 0:
                 arrived.append(input_rr[0])
                 tempo_total = input_rr[0]['arrival']
-
-            print(arrived)
            
             # verifica se a duração > quantum
             if (arrived[0]['duration'] > quantum):
                 # duração - quantum
                 arrived[0]['duration'] -= quantum
-                output_rr.append("Rodar processo [" + str(arrived[0]['id']) + "] de [" + str(
-                    tempo_total) + "] até [" + str(tempo_total + quantum) + "]")
+                output_rr.append((arrived[0]['id'], tempo_total, (tempo_total + quantum)))
                 tempo_total += quantum
-                arrived.append(arrived.pop(0))                      #
+                arrived.append(arrived.pop(0))
             else:
-                output_rr.append("Rodar processo [" + str(arrived[0]['id']) + "] de [" + str(
-                    tempo_total) + "] até [" + str(tempo_total + arrived[0]['duration']) + "]")
+                output_rr.append((arrived[0]['id'], tempo_total, (tempo_total + arrived[0]['duration'])))
                 tempo_total += arrived[0]['duration']
                 # remove elemento do array
                 removed_element_id = arrived.pop(0)['id']
                 input_rr = list(filter(lambda x: x['id'] != removed_element_id, input_rr))
 
         return output_rr
+    
+    def time_analysis(self):
+
+        labels = ["FIFO", "SJF", "RR"]
+
+        for idx, out in enumerate(self.output):
+            print(labels[idx], end=" ")
+
+            # calcular tempo total de execução médio = ultimo valor / total de processos
+            avg_exec_time = out[-1][2]/len(self.input)
+            print(str(round(avg_exec_time, 1)), end=" ")
+            
+            # calcular o tempo médio de resposta = sum(primeira exec - arrival) / total de processos
+            
+            total_resp_time = 0
+            # estrutura do self.input: [id], [arrival], [duração]
+            for process in self.input:
+                # buscar a primeira execução do processo
+                first_exec = list(filter(lambda x: x[0] == process['id'], out))[0]
+                total_resp_time += first_exec[1] - process['arrival']
+
+            avg_response_time = total_resp_time / len(self.input)
+            print(str(round(avg_response_time, 1)), end=" ")
+            
+            # calcular o tempo médio de espera = sum(última exec - tempo de chegada - tempo de duração)/total de processos 
+            total_wait_time = 0
+            for process in self.input:
+                # buscar a primeira execução do processo
+                last_exec = list(filter(lambda x: x[0] == process['id'], out))[-1]
+                print(last_exec[2])
+                # TODO Encontrar o erro no cálculo do wait_time
+                total_wait_time += last_exec[2] - process['arrival'] - process['duration']
+
+
+            avg_wait_time = total_wait_time / len(self.input)
+            print(str(round(avg_wait_time, 1)))
