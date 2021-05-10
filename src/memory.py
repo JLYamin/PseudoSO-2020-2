@@ -40,7 +40,7 @@ class Memory:
 
         oldest_page = 0
         page_fault = 0
-        pages_array = [{'page': None, 'ref_count': 0}
+        pages_array = [{'page': None, 'r': 0, 'ref_count': 0}
                        for i in range(self.pages_num)]
 
         for ref in self.ref_sequence:                       # roda entre todas as referencias

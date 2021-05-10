@@ -145,11 +145,12 @@ class Process:
         for idx, out in enumerate(self.output):
             print(labels[idx], end=" ")
 
-            # calcular tempo total de execução médio = ultimo valor / total de processos
+            # Calcular TEMPO TOTAL DE EXECUÇÃO médio = ultimo valor / total de processos
+
             avg_exec_time = out[-1][2]/len(self.input)
             print(str(round(avg_exec_time, 1)), end=" ")
 
-            # calcular o tempo médio de resposta = sum(primeira exec - arrival) / total de processos
+            # Calcular o TEMPO MÉDIO DE RESPOSTA = sum(primeira exec - arrival) / total de processos
 
             total_resp_time = 0
             # estrutura do self.input: [id], [arrival], [duração]
@@ -162,13 +163,12 @@ class Process:
             avg_response_time = total_resp_time / len(self.input)
             print(str(round(avg_response_time, 1)), end=" ")
 
-            # calcular o tempo médio de espera = sum(última exec - tempo de chegada - tempo de duração)/total de processos
+            # calcular o TEMPO MÉDIO DE ESPERA = sum(última exec - tempo de chegada - tempo de duração)/total de processos
             total_wait_time = 0
             for process in self.input:
                 # buscar a primeira execução do processo
                 last_exec = list(
                     filter(lambda x: x[0] == process['id'], out))[-1]
-                # TODO Encontrar o erro no cálculo do wait_time
                 total_wait_time += last_exec[2] - \
                     process['arrival'] - process['duration']
 
