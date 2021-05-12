@@ -8,7 +8,13 @@ class Memory:
     ref_sequence = []
 
     def __init__(self, file_data):
-        self.pre_process(file_data)
+        try:
+            self.pre_process(file_data)
+        except:
+            print(
+                "Arquivo em formato inválido. Verifique se há linhas em branco adicionais.")
+            return
+
         self.fifo()
         self.second_chance()
         self.lru()

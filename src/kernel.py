@@ -8,22 +8,27 @@ from src.io import IO
 # .\__main__.py 2 memory.txt
 # .\__main__.py 3 io.txt
 
+
 class Kernel:
 
     def __init__(self):
         input_mode = sys.argv[1]
         file_name = sys.argv[2]
 
-        file_data = self.read_file(file_name)
-
+        try:
+            file_data = self.read_file(file_name)
+        except:
+            print("Arquivo inválido")
+            return
 
         if input_mode == "1":
-            process = Process(file_data)
+            Process(file_data)
         elif input_mode == "2":
-            memory = Memory(file_data)
+            Memory(file_data)
         elif input_mode == "3":
-            io = IO(file_data)
-
+            IO(file_data)
+        else:
+            print("Argumentos inválidos")
 
     def read_file(self, file_name):
         with open("./input/" + file_name, "r") as f:

@@ -8,7 +8,12 @@ class Process:
     output = []
 
     def __init__(self, file_data):
-        self.pre_process(file_data)
+        try:
+            self.pre_process(file_data)
+        except:
+            print(
+                "Arquivo em formato inválido. Verifique se há linhas em branco adicionais.")
+            return
 
         self.output.append(self.fifo())
         self.output.append(self.sjf())

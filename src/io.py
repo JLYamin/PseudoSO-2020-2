@@ -9,7 +9,13 @@ class IO:
     cyl_sequence = []       # Sequência de cilindros
 
     def __init__(self, file_data):
-        self.pre_process(file_data)
+        try:
+            self.pre_process(file_data)
+        except:
+            print(
+                "Arquivo em formato inválido. Verifique se há linhas em branco adicionais.")
+            return
+
         self.fcfs()
         self.sstf()
         self.scan()
@@ -27,7 +33,8 @@ class IO:
         last_pos = self.initial_cyl
 
         for pos in self.cyl_sequence:           # Varre a sequência de cilindros
-            total_cyl += abs(last_pos - pos)    # Pela ordem, calcula o deslocamento pela diferença 
+            # Pela ordem, calcula o deslocamento pela diferença
+            total_cyl += abs(last_pos - pos)
             last_pos = pos                      # Atualiza a posição
 
         print(total_cyl)
@@ -42,8 +49,10 @@ class IO:
         last_pos = self.initial_cyl
 
         for _ in self.cyl_sequence:                 # Loop em cima do tamanho da sequência
-            next_pos = ordened_sequence.pop(0)      # O primeiro cilindro da sequência é o mais próximo
-            total_cyl += abs(last_pos - next_pos)   # Incrementa a distância deslocada
+            # O primeiro cilindro da sequência é o mais próximo
+            next_pos = ordened_sequence.pop(0)
+            # Incrementa a distância deslocada
+            total_cyl += abs(last_pos - next_pos)
             last_pos = next_pos                     # Atualiza a posição
             ordened_sequence = sorted(              # Ordena pela distância, sem os cilindros já visitados
                 ordened_sequence, key=lambda x: abs(x - next_pos))
@@ -60,8 +69,10 @@ class IO:
             sorted(self.cyl_sequence, key=lambda x: abs(x - self.initial_cyl)))[0]
         direction = closest_pos - self.initial_cyl      # Define a distância
 
-        first_pos = ordened_sequence[0]                 # Define o cilindro mais à esquerda
-        last_pos = ordened_sequence[-1]                 # Define o cilindro mais à direita
+        # Define o cilindro mais à esquerda
+        first_pos = ordened_sequence[0]
+        # Define o cilindro mais à direita
+        last_pos = ordened_sequence[-1]
 
         if (direction > 0):                             # Se positivo, movimenta para a direita
             total_cyl = last_pos - self.initial_cyl     # Calcula deslocamento da ida
