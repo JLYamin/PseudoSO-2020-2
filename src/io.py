@@ -36,6 +36,17 @@ class IO:
         print("SSTF", end=" ")
 
         total_cyl = 0
+        ordened_sequence = copy.deepcopy(
+            sorted(self.cyl_sequence, key=lambda x: abs(x - self.initial_cyl)))
+        next_pos = 0
+        last_pos = self.initial_cyl
+
+        for _ in self.cyl_sequence:
+            next_pos = ordened_sequence.pop(0)
+            total_cyl += abs(last_pos - next_pos)
+            last_pos = next_pos
+            ordened_sequence = sorted(
+                ordened_sequence, key=lambda x: abs(x - next_pos))
 
         print(total_cyl)
 
