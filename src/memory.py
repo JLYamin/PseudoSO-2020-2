@@ -27,17 +27,20 @@ class Memory:
     def fifo(self):
         print("FIFO", end=" ")
 
-        idx = 0                                     # página mais antiga
-        page_fault = 0
+        idx = 0                                     # índice que representa a página mais antiga
+        page_fault = 0                              # total de page faults
+        # representa as páginas do array
         pages_array = [None for i in range(self.pages_num)]
 
         for ref in self.ref_sequence:
             try:
+                # se não encontrar a página no array, lança uma exceção
                 pages_array.index(ref)
             except:
+                # caso não exista a página, ela é adicionada
                 pages_array[idx] = ref
-                page_fault += 1
-                idx = (idx + 1) % (self.pages_num)
+                page_fault += 1                     # incrementa contador de page faults
+                idx = (idx + 1) % (self.pages_num)  # itera o índice
 
         print(page_fault)
 
